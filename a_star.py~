@@ -1,0 +1,107 @@
+
+
+
+
+def file_to_map(s = './boards/board-1-1.txt'):
+    map = []
+    file = open(s)
+
+    for line in file:
+
+        line = line.strip()
+
+        list = []
+        for char in line:
+            list.append(char)
+            
+        map.append(list)
+    return map
+
+map = file_to_map()
+for list in map:
+    print list
+
+dictionary = {'.': 'space', '#': 'wall', 'A': 'A', 'B': 'B'} #because I easily forget
+
+
+#The overhead is jost to make it easier to think
+def go_up(map, i, j):
+    return map[i, j]
+
+def go_down(map, i, j):
+    return map[i, j]
+
+def go_left(map, i, j):
+    return map[i, j]
+
+def go_down(map, i, j):
+    return map[i, j]
+
+def expand(queue, map, i, j): #expand returns a list of nodes
+    Node n = Node()
+
+
+class Node:
+    char = ''
+    i = 0
+    j = 0
+
+    g = 0
+    h = 0
+    f = 0
+    
+    #status
+    parent = None
+    kids = []
+
+    def h():
+        return 0
+    
+    def __init__(self, char, g = -1, i, j):
+        self.char = char
+        self.g = g + 1
+        self.i = i
+        self.j = j
+        
+        
+def best_first_search(map, i, j, x, y):
+    goal = (x, y)
+    
+    CLOSED = []
+    OPEN = []
+    n0 = Node() #give coordinates and target as input
+
+    OPEN.push(n0)
+
+    while True:
+        if OPEN == []:
+            return False
+        X = OPEN.pop()
+        CLOSED.push(X)
+
+        #if x is sollution return something (x, succeed)
+
+        SUCC = expand(X) #so this should be a list of nodes
+
+        for S in SUCC:
+            #if note S* has previously been created, and is state(S*)
+            X.kids.push(S)
+            if S not in OPEN and S not in CLOSED:
+                attach_and_eval(S, X)
+                OPEN.append(S) #need to be sorted, fix later
+            else if X.g + arc_cost(X, S) < S.g: #found cheaper path to S
+                attach_and_eval(S, X)
+                if S in CLOSED:
+                    propagate_path_improvements(S)
+
+def attach_and_eval(C, P):
+    C.parent = P
+    C.g = P.g + arc_cost(P, C)
+    C.f = C.g + C.h()
+
+def propagate_path_improvements(P):
+    for C in P.kids:
+        if P.g + arc_cost(P, C) < C.g:
+            C.parent = P
+            C.g = P.g + arc_cost(P, C)
+            C.f = C.g + C.h()
