@@ -87,10 +87,8 @@ def createNode(list, map, i, j, x, y, g):
         return list
     elif i + 1 > len(map) or j + 1 > len(map[0]):
         return list
-    elif map[i][j] == '#':
-        if debug: print '#'
-        return list
-    list.append(Node(i, j, x, y, g))
+    c = map[i][j]
+    list.append(Node(i, j, x, y, g, c))
     return list
 
 def expand(map, node): #expand returns a list of nodes
@@ -106,13 +104,15 @@ def expand(map, node): #expand returns a list of nodes
 
 
 def printTrace(map, node):
-    map[node.i][node.j] = '@'
+    map[node.i][node.j] = ' '
     if node.parent:
         return printTrace(map, node.parent)
     else: return map
     
 
 class Node:
+    c = ''
+    
     i = 0
     j = 0
 
@@ -131,15 +131,15 @@ class Node:
     def h(self):
         return abs(self.i - self.x) + abs(self.j - self.y)
     
-    def __init__(self, i, j, x, y, g):
+    def __init__(self, i, j, x, y, g, c):
+        self.c = c
         self.i = i
         self.j = j
 
         self.x = x
         self.y = y
         
-        g = g + 1
-        
+        self.g = g + costaAllePenga(c)
 
 def best_first_search(map, i, j, x, y):
 
@@ -150,8 +150,10 @@ def best_first_search(map, i, j, x, y):
     OPEN = []
 
     trans_table = {}
+
+    c = map[i][j]
     
-    n0 = Node(i, j, x, y, 0) #give coordinates and target as input
+    n0 = Node(i, j, x, y, 0, c) #give coordinates and target as input
     trans_table[str(i) + ',' + str(j)] = n0
 
     OPEN.append(n0)
@@ -197,8 +199,17 @@ def best_first_search(map, i, j, x, y):
                 if S in CLOSED:
                     propagate_path_improvements(S)
 
+
+def costaAllePenga(c):
+    if c == 'w':return 100
+    elif c == 'm': return 50
+    elif c == 'f': return 10
+    elif c == 'g': return 5
+    else: return 1
+
 def arc_cost(A, B): #because I suspect that this will change later on
-    return 1
+    c = B.c
+    return costaAllePenga(c)
 
 
 def sortNodes(NODES):
@@ -233,7 +244,10 @@ def propagate_path_improvements(P):
 
 
 for i in range(1, 5):
-    map = file_to_map('./boards/board-1-' + str(i) + '.txt')      
+    
+
+    print('\n\n\n')
+    map = file_to_map('./boards/board-2-' + str(i) + '.txt')      
     printMap(map)
     
     for i in range(len(map)):
